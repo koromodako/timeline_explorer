@@ -8,11 +8,7 @@ from .helper.log import app_log
 # ------------------------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------------------------
-def query(database, max_width=None,
-          select=None, distinct=False,
-          where=None,
-          order_by=None, order=None,
-          limit=None, offset=None):
+def query(database, select=None, distinct=False, where=None, order_by=None, order=None, limit=None, offset=None):
     '''Perform a query on the database
     '''
     with TEDB(database) as tedb:
@@ -23,7 +19,4 @@ def query(database, max_width=None,
         if order:
             order = TEDBQuery.SortOrder(order)
         query = TEDBQuery(select, distinct, where, order_by, order, limit, offset)
-        for row in tedb.select(query):
-            if max_width:
-                row = [elt[:max_width] + (elt[max_width:] and '...') for elt in row]
-            print(f"| {' | '.join(row)} |")
+        yield from tedb.select(query)

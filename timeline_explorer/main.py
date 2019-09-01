@@ -55,11 +55,10 @@ def query_cmd(args):
         args.limit = conf.get('limit', args.limit)
         args.offset = conf.get('offset', args.offset)
         args.max_width = conf.get('max_width', args.max_width)
-    query(args.database, args.max_width,
-          args.select, args.distinct,
-          args.where,
-          args.order_by, args.order,
-          args.limit, args.offset)
+    for row in query(args.database, args.select, args.distinct, args.where, args.order_by, args.order, args.limit, args.offset):
+        if args.max_width:
+            row = [elt[:args.max_width] + (elt[args.max_width:] and '...') for elt in row]
+        print(f"| {' | '.join(row)} |")
 
 def parse_args():
     '''Parse script arguments
@@ -95,7 +94,12 @@ def app():
     print(__banner__)
     args = parse_args()
     log_enable_debug(args.debug)
-    args.cmd_func(args)
+    try:
+        args.cmd_func(args)
+    except BrokenPipeError:
+        app_log.warning("Pipe error, the command after pipe failed.")
+    except:
+        app_log.exception("An exception occured.")
 
 if __name__ == '__main__':
     app()
