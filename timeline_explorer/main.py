@@ -97,7 +97,7 @@ def app():
     try:
         args.cmd_func(args)
     except BrokenPipeError:
-        app_log.warning("Pipe error, the command after pipe failed.")
+        app_log.warning("Pipe error, failed to write more data to pipe.")
     except:
         app_log.exception("An exception occured.")
 
