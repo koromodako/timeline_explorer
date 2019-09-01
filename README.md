@@ -1,2 +1,9 @@
-# timeline_explorer
-Plaso timeline explorer written in python
+# Timeline Explorer in Python
+
+## Why ?
+
+_TODO_
+
+## Requirements
+
+_TODO_
