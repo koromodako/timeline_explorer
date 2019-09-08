@@ -14,14 +14,7 @@ from .helper.log import app_log, log_enable_debug
 # ------------------------------------------------------------------------------
 # GLOBALS
 # ------------------------------------------------------------------------------
-__banner__ = r'''
- _____ _                _ _              _____            _
-|_   _(_)_ __ ___   ___| (_)_ __   ___  | ____|_  ___ __ | | ___  _ __ ___ _ __
-  | | | | '_ ` _ \ / _ \ | | '_ \ / _ \ |  _| \ \/ / '_ \| |/ _ \| '__/ _ \ '__|
-  | | | | | | | | |  __/ | | | | |  __/ | |___ >  <| |_) | | (_) | | |  __/ |
-  |_| |_|_| |_| |_|\___|_|_|_| |_|\___| |_____/_/\_\ .__/|_|\___/|_|  \___|_|
-                                                   |_|                        {}
-'''.format(__version__)
+__banner__ = r'''Timeline Explorer {}'''.format(__version__)
 # ------------------------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------------------------
@@ -55,10 +48,14 @@ def query_cmd(args):
         args.limit = conf.get('limit', args.limit)
         args.offset = conf.get('offset', args.offset)
         args.max_width = conf.get('max_width', args.max_width)
+
     for row in query(args.database, args.select, args.distinct, args.where, args.order_by, args.order, args.limit, args.offset):
         if args.max_width:
             row = [elt[:args.max_width] + (elt[args.max_width:] and '...') for elt in row]
-        print(f"| {' | '.join(row)} |")
+        if args.viewer:
+            print(dumps({'row': row}, separators=(',', ':')))
+        else:
+            print(f"| {' | '.join(row)} |")
 
 def parse_args():
     '''Parse script arguments
@@ -80,6 +77,7 @@ def parse_args():
     query_p = subparsers.add_parser('query')
     query_p.set_defaults(cmd_func=query_cmd)
     query_p.add_argument('--config', '-c', type=Path, help="Query configuration file (JSON formatted values for query arguments)")
+    query_p.add_argument('--viewer', action='store_true', help="Output using a format suitable for viewer")
     query_p.add_argument('--order', default='asc', help="Choose between ascending (asc) and descending (desc)")
     query_p.add_argument('--order-by', help="Comma separated list of columns")
     query_p.add_argument('--select', default='*', help="Comma separated list of columns to display")
@@ -91,7 +89,7 @@ def parse_args():
     return p.parse_args()
 
 def app():
-    print(__banner__)
+    app_log.info(__banner__)
     args = parse_args()
     log_enable_debug(args.debug)
     try:

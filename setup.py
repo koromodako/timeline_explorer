@@ -22,7 +22,8 @@ setup(
     # configuration files
     entry_points={
         'console_scripts': [
-            'timeline-explorer = timeline_explorer.main:app',
+            'timeline-explorer = timeline_explorer.cli:app',
+            'timeline-viewer = timeline_explorer.viewer:app',
         ]
     }
 )
