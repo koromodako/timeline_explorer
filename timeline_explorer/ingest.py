@@ -1,18 +1,13 @@
 '''Ingest module
 '''
-# ------------------------------------------------------------------------------
-# IMPORTS
-# ------------------------------------------------------------------------------
 from csv import reader
-from .helper.db import TEDB
-from .helper.log import app_log
-# ------------------------------------------------------------------------------
-# GLOBALS
-# ------------------------------------------------------------------------------
+from .db import TEDB
+from .logging import LOGGER
+
+
 BATCH_SIZE = 1000
-# ------------------------------------------------------------------------------
-# FUNCTIONS
-# ------------------------------------------------------------------------------
+
+
 def ingest(csv_path, database_path, wipe=False):
     '''Ingest a CSV and insert it in a database
     '''
@@ -27,7 +22,9 @@ def ingest(csv_path, database_path, wipe=False):
             for row in csvreader:
                 line += 1
                 if len(row) != expected_len:
-                    raise RuntimeError(f"invalid CSV file: row does not match the expected number of columns at line {line}")
+                    raise RuntimeError(
+                        f"invalid CSV file: row does not match the expected number of columns at line {line}"
+                    )
                 rows.append(row)
                 count += 1
                 if count == BATCH_SIZE:

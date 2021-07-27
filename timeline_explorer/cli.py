@@ -1,35 +1,32 @@
 '''CSV Reader
 '''
-# ------------------------------------------------------------------------------
-# IMPORTS
-# ------------------------------------------------------------------------------
 from json import loads, dumps
 from pathlib import Path
 from argparse import ArgumentParser
-from timeline_explorer import __version__
+from . import version
+from .db import TEDB
 from .query import query
 from .ingest import ingest
-from .helper.db import TEDB
-from .helper.log import app_log, log_enable_debug
-# ------------------------------------------------------------------------------
-# GLOBALS
-# ------------------------------------------------------------------------------
-__banner__ = r'''Timeline Explorer {}'''.format(__version__)
-# ------------------------------------------------------------------------------
-# FUNCTIONS
-# ------------------------------------------------------------------------------
-def info_cmd(args):
+from .logging import LOGGER, log_enable_debug
+
+
+BANNER = f"Timeline Explorer {version}"
+
+
+def info_cmd(_args):
     '''Give some information
     '''
     print("Columns:")
     for col in TEDB.Column:
         print(f"  - {col.value}")
 
+
 def ingest_cmd(args):
     '''Load a CSV into a SQLite database
     '''
     count = ingest(args.csv, args.database, args.wipe)
     print(f"{count} lines inserted into {args.database}")
+
 
 def query_cmd(args):
     '''Perform a query on the database
@@ -49,21 +46,34 @@ def query_cmd(args):
         args.offset = conf.get('offset', args.offset)
         args.max_width = conf.get('max_width', args.max_width)
 
-    for row in query(args.database, args.select, args.distinct, args.where, args.order_by, args.order, args.limit, args.offset):
+    for row in query(
+        args.database,
+        args.select,
+        args.distinct,
+        args.where,
+        args.order_by,
+        args.order,
+        args.limit,
+        args.offset
+    ):
         if args.max_width:
-            row = [elt[:args.max_width] + (elt[args.max_width:] and '...') for elt in row]
+            row = [
+                elt[:args.max_width] + (elt[args.max_width:] and '...')
+                for elt in row
+            ]
         if args.viewer:
             print(dumps({'row': row}, separators=(',', ':')))
         else:
             print(f"| {' | '.join(row)} |")
 
+
 def parse_args():
     '''Parse script arguments
     '''
-    p = ArgumentParser(description="CSV Reader")
-    p.add_argument('--debug', '-d', action='store_true', help="Enable debugging output")
-    p.add_argument('--database', type=Path, default=TEDB.DEFAULT_DB, help="Database to be written")
-    subparsers = p.add_subparsers(dest='command')
+    parser = ArgumentParser(description="CSV Reader")
+    parser.add_argument('--debug', '-d', action='store_true', help="Enable debugging output")
+    parser.add_argument('--database', type=Path, default=TEDB.DEFAULT_DB, help="Database to be written")
+    subparsers = parser.add_subparsers(dest='cmd')
     subparsers.required = True
     # info parser
     info_p = subparsers.add_parser('info')
@@ -86,18 +96,20 @@ def parse_args():
     query_p.add_argument('--limit', type=int, help="Limit number of results")
     query_p.add_argument('--offset', type=int, help="Start reading results from offset. Only valid if --limit is set")
     query_p.add_argument('--max-width', type=int, help="Max width for each column")
-    return p.parse_args()
+    return parser.parse_args()
+
 
 def app():
-    app_log.info(__banner__)
+    LOGGER.info(BANNER)
     args = parse_args()
     log_enable_debug(args.debug)
     try:
         args.cmd_func(args)
     except BrokenPipeError:
-        app_log.warning("Pipe error, failed to write more data to pipe.")
+        LOGGER.warning("Pipe error, failed to write more data to pipe.")
     except:
-        app_log.exception("An exception occured.")
+        LOGGER.exception("An exception occured.")
+
 
 if __name__ == '__main__':
     app()

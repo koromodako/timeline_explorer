@@ -1,7 +1,3 @@
 '''Main module
 '''
-__major__ = 1
-__minor__ = 1
-__patch__ = 0
-__version_info__ = (__major__, __minor__, __patch__)
-__version__ = f'{__major__}.{__minor__}.{__patch__}'
+from .__version__ import version, version_tuple

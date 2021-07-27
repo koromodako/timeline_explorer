@@ -4,7 +4,7 @@
 # IMPORTS
 # ------------------------------------------------------------------------------
 import sys
-from PyQt5.QtGui import QIcon, QTextOption
+from PyQt5.QtGui import QTextOption
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QLabel,
@@ -136,8 +136,8 @@ class QueryResultViewer(QWidget):
     @pyqtSlot()
     def display_item_details(self):
         print("\n")
-        for currentQTableWidgetItem in self._table.selectedItems():
-            dialog = ItemDetailsDialog(currentQTableWidgetItem.text())
+        for item in self._table.selectedItems():
+            dialog = ItemDetailsDialog(item.text())
             dialog.exec_()
             break
 # ------------------------------------------------------------------------------
