@@ -70,7 +70,7 @@ def query_cmd(args):
 def parse_args():
     '''Parse script arguments
     '''
-    parser = ArgumentParser(description="CSV Reader")
+    parser = ArgumentParser(description="CSV Timeline Explorer")
     parser.add_argument('--debug', '-d', action='store_true', help="Enable debugging output")
     parser.add_argument('--database', type=Path, default=TEDB.DEFAULT_DB, help="Database to be written")
     subparsers = parser.add_subparsers(dest='cmd')
