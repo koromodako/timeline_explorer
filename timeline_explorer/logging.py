@@ -8,7 +8,7 @@ from logging import getLogger
 LOGGER = getLogger('timeline-explorer')
 LOGGER.setLevel('INFO')
 LOGGER.addHandler(
-    RichHandler(level='DEBUG', console=Console(stderr=True)
+    RichHandler(level='DEBUG', console=Console(stderr=True))
 )
 
 
