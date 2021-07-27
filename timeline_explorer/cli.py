@@ -4,7 +4,7 @@ from json import loads, dumps
 from pathlib import Path
 from argparse import ArgumentParser
 from . import version
-from .db import TEDB
+from .db import TEDB, TEDBColumn
 from .query import query
 from .ingest import ingest
 from .logging import LOGGER, log_enable_debug
@@ -17,7 +17,7 @@ def info_cmd(_args):
     '''Give some information
     '''
     print("Columns:")
-    for col in TEDB.Column:
+    for col in TEDBColumn:
         print(f"  - {col.value}")
 
 
