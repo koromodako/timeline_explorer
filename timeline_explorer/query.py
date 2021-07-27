@@ -1,6 +1,6 @@
 '''Query module
 '''
-from .db import TEDB, TEDBColumn, TEDBQuery
+from .db import TEDB, TEDBColumn, TEDBQuery, SortOrder
 
 def query(database, select=None, distinct=False, where=None, order_by=None, order=None, limit=None, offset=None):
     '''Perform a query on the database
@@ -17,7 +17,7 @@ def query(database, select=None, distinct=False, where=None, order_by=None, orde
             if TEDBColumn.ALL in order_by:
                 raise ValueError("order_by cannot contain '*' column")
         if order:
-            order = TEDBQuery.SortOrder(order)
+            order = SortOrder(order)
         query = TEDBQuery(
             select, distinct, where, order_by, order, limit, offset
         )
